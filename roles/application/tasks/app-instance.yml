@@ -43,7 +43,6 @@
         instance_tags: "{{ vpc.env_tags | combine({'Role': instance_name, 'Name': instance_name + '-' + '%02d'|format(item|int) + '.' + global_data.stack_name}) }}"
         monitoring: yes
         vpc_subnet_id: "{{ private_subnets[item|int - 1] }}"
-        user_data: "{{ lookup('template','bootstrap.j2.sh') }}"
         volumes: "{{ instance_data.instance.volumes | default(omit) }}"
       register: app_instance
       with_sequence: count="{{ instance_data.instance.count | default(0) }}"
