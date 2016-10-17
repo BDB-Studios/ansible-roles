@@ -65,6 +65,12 @@
       tags:
         - elasticache
 
+    - name: Create IAM resources
+      include: iam.yml
+      when: iam_policy_data is defined
+      tags:
+        - iam
+
     - name: Create infrastructure for app
       include: infra.yml
       with_items: "{{ app_data |default([]) }}"
