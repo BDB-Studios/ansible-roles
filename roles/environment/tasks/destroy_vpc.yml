@@ -1,21 +1,14 @@
----
-#removal of vpc requires removing everything else first
-# everything else:
-# instances, elb, asg, launch conf
-# route53 zone
-# nat gw,
-
 - name: get VPC data
   ec2_vpc_net_facts:
     filters:
       'tag:Name': "{{ vpc.env_tags.Name }}"
   register: vpc_data
 
-- name: Get all instance in VPC
+- name: get a list of all instances based on the stack tag
   ec2_remote_facts:
     filters:
       vpc_id: "{{ vpc_data.vpcs[0].id }}"
-  when: "{{ vpc_data| default([]) | count > 0 }}"
+      "tag:Stack": "{{ target }}"
   register: instance_data
 
 - name: Check if NAT gateway exists
