@@ -1,0 +1,50 @@
+---
+
+- name: Create private route53_zone
+  route53_zone:
+    state: present
+    vpc_region: "{{ vpc.aws_region }}"
+    zone: "{{ global.stack_name }}.internal"
+    vpc_id: "{{ vpc_id }}"
+  register: internal_dns_zone
+
+- name: Add route 53 entries for shared hosts in the private domain
+  route53:
+    command: create
+    overwrite: yes
+    record: "{{ item + '.' + global.stack_name }}.internal"
+    zone: "{{ global.stack_name }}.internal."
+    hosted_zone_id: "{{ internal_dns_zone.set.zone_id }}"
+    private_zone: yes
+    type: CNAME
+    value: "{{ [ item, vpc_name, 'internal' ] | join('.') }}"
+    ttl: 300
+  with_items:
+    - jump
+
+- name: Add jumphost alias public dns entry
+  route53:
+    command: create
+    overwrite: yes
+    record: "{{ [ 'jump', global.stack_name, global.domain_name ] | join('.') }}."
+    zone: "{{ global.domain_name }}"
+    type: CNAME
+    value: "{{ [ 'jump', vpc_name, global.domain_name ] | join('.') }}."
+
+- name: Add app client security groups
+  ec2_group:
+    name: "{{ item.name }}"
+    description: "{{ item.desc }}"
+    purge_rules: False
+    rules_egress: []
+    state: present
+    vpc_id: "{{ vpc_id }}"
+  with_items: "{{ app_client_security_groups| default([]) }}"
+  register: client_security_groups
+
+- name: Add tags until 2.2
+  ec2_tag:
+    resource: "{{ item.group_id }}"
+    state: present
+    tags: "{{ vpc.env_tags | combine({'Name': item.item.name}) }}"
+  with_items: "{{ client_security_groups.results }}"

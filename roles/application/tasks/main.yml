@@ -1,0 +1,76 @@
+#get some data from the shared vpc
+- name:  Get vpc data for stack
+  ec2_vpc_net_facts:
+    filters:
+      'tag:Name': "{{ [vpc_name, global.domain_name]|join('.') }}"
+  register: vpc_data
+  always_run: true
+  tags:
+    - always
+
+- name: Get list of subnets
+  ec2_vpc_subnet_facts:
+    filters:
+      vpc-id: "{{ vpc_data.vpcs.0.id }}"
+  register: subnet_data
+  always_run: true
+  tags:
+    - always
+
+- name: Get account id data
+  shell: aws iam list-users | grep Arn | cut -d ':' -f 6 | uniq
+  register: account_id
+  always_run: true
+  tags:
+    - always
+
+- name: Make accountid value available
+  set_fact:
+    aws_acc_id: "{{ account_id.stdout }}"
+  always_run: true
+  tags:
+    - always
+
+- name: Setup vars for playbook
+  set_fact:
+    private_subnets: "{{ subnet_data.subnets | selectattr('tags.Name', 'match', '^private.*')| map(attribute='id') | list }}"
+    public_subnets: "{{ subnet_data.subnets | selectattr('tags.Name', 'match', '^public.*')| map(attribute='id') | list }}"
+    vpc_id: "{{ vpc_data.vpcs.0.id }}"
+  always_run: true
+  tags:
+    - always
+
+- block:
+    - name: Create core stack components
+      include: network.yml
+      tags:
+        - network
+        - instances
+
+    - name: Create rds resources
+      include: rds.yml
+      with_items: "{{ rds_dbs | default ([]) }}"
+      loop_control:
+        loop_var: rds_data
+      when: rds_dbs is defined
+      tags:
+        - rds
+
+    - name: Create elasticache resources
+      include: elasticache.yml
+      with_items: "{{ elasticache_clusters | default([]) }}"
+      loop_control:
+        loop_var: ec_data
+      when: elasticache_clusters is defined
+      tags:
+        - elasticache
+
+    - name: Create infrastructure for app
+      include: infra.yml
+      with_items: "{{ app_data |default([]) }}"
+      loop_control:
+        loop_var: appdata
+      tags:
+        - instances
+
+  when: destroy_stack is undefined or not destroy_stack
