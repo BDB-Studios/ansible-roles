@@ -14,3 +14,12 @@
     tags:
       - instances
       - jumphost
+  when: "{{ vpc.state | default('present') == 'present' }}"
+
+#cleanup/delete vpc
+- block:
+  - name: Delete VPC
+    include: destroy_vpc.yml
+  when: "{{ vpc.state | default('present') == 'absent' }}"
+  tags:
+    - destroy
