@@ -1,0 +1,16 @@
+- block:
+  - name: Create VPC and networks
+    include: vpc.yml
+    tags:
+      - network
+
+  - name: Create security groups for jumphost
+    include: security_groups.yml
+    tags:
+      - security
+
+  - name: Create our jumphost
+    include: jump_host.yml
+    tags:
+      - instances
+      - jumphost
