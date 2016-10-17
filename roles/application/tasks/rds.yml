@@ -50,28 +50,40 @@
   when: rds_data.rds_sg is defined
 
 - name: Create RDS instances
-  rds:
-    command: create
-    instance_name: "{{ db_name | default(global.domain_name)}}"
-    db_engine: "{{ db_engine | default('MySQL') }}"
-    size: "{{ instance_size | default(db.size)}}"
-    instance_type: "{{ instance_size | default(db.size)}}"
-    username: "{{ instance_size | default(db.size)}}"
-    password: "{{ instance_size | default(db.size)}}"
-    security_groups:
-    region:
-    subnet:
-  with_items: "{{ rds_dbs | default([]) }}"
+    command: "aws rds create-db-instance
+              --db-name {{ item.db_name }}
+              --db-instance-identifier {{ item.db_name + '-' + global_data.stack_name  }}
+              --storage-type {{ item.storage_type | default('gp2') }}
+              --allocated-storage {{ item.intial_storage | default(10) }}
+              --db-instance-class {{ item.instance_type | default('') }}
+              --engine {{ item.db_engine | default('mariadb') }}
+              --engine-version {{ item.engine_version | default('') }}
+              --master-username {{ item.username }}
+              --master-user-password {{ item.password }}
+              --vpc-security-group-ids {{ rds_sg_id }}
+              --db-subnet-group-name rds-private-subnets-{{ vpc_name }}
+              --preferred-maintenance-window {{ item.maint_window }}
+              --backup-retention-period {{ item.backup_retention }}
+              --preferred-backup-window {{ item.backup_window }}
+              --tags '{{ item.tags|to_json }}'
+              --no-publicly-accessible
+              --{{ item.multi_az | default ('no-multi-az') }}
+              --storage-encrypted"
+    register: rds_creation_result
+    failed_when: >
+      rds_creation_result.rc != 0 and ('DBInstanceAlreadyExists' not in rds_creation_result.stderr)
+    changed_when: "rds_creation_result.rc == 0"
+    with_items: "{{ rds_dbs | default([]) }}"
 
-- name: get RDS instance facts
-  rds:
-    command: facts
-    instance_name: "{{ item.db_name + '-' + global.stack_name }}"
-  register: rds_instance_facts
-  until: rds_instance_facts.instance.status == "available"
-  retries: 30
-  delay: 60
-  with_items: "{{ rds_dbs | default([]) }}"
+  - name: get RDS instance facts
+    rds:
+      command: facts
+      instance_name: "{{ item.db_name + '-' + global_data.stack_name }}"
+    register: rds_instance_facts
+    until: rds_instance_facts.instance.status == "available"
+    retries: 30
+    delay: 60
+    with_items: "{{ rds_dbs | default([]) }}"
 
 - name: Create rds route 53 entry
   route53:
