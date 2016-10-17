@@ -52,7 +52,7 @@
     tags: "{{ vpc.env_tags | combine({ 'Name': elb_name + '-' + global_data.stack_name}) }}"
     scheme: "{{ elbdata.type | default(omit) }}"
     listeners: "{{ elbdata.listeners }}"
-    health_check: "{{ elbdata.health_check }}"
+#    health_check: "{{ elbdata.health_check }}"
     security_group_names: "{{ elbdata.sg }}"
     cross_az_load_balancing: yes
   register: app_elb

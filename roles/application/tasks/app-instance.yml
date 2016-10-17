@@ -32,15 +32,15 @@
 - block:
     - name: Create instance(s) for app component
       ec2:
-        instance_profile_name: "{{ instance_data.iam_role |default(instance_name + '.' + opg_data.stack) }}"
+        instance_profile_name: "{{ instance_data.iam_role |default(instance_name + '.' + global_data.stack_name) }}"
         instance_type: "{{ instance_data.instance.type }}"
         exact_count: 1
         key_name: "{{ vpc.ssh_key_name| default('default') }}"
         group: "{{ instance_data.sg }}"
         image: "{{ vpc.ami }}"
         wait: yes
-        count_tag: "{{ { 'Name': instance_name + '-' + '%02d'|format(item|int) + '.' + opg_data.stack } }}"
-        instance_tags: "{{ vpc.env_tags | combine({'Role': instance_name, 'Name': instance_name + '-' + '%02d'|format(item|int) + '.' + opg_data.stack}) }}"
+        count_tag: "{{ { 'Name': instance_name + '-' + '%02d'|format(item|int) + '.' + global_data.stack_name } }}"
+        instance_tags: "{{ vpc.env_tags | combine({'Role': instance_name, 'Name': instance_name + '-' + '%02d'|format(item|int) + '.' + global_data.stack_name}) }}"
         monitoring: yes
         vpc_subnet_id: "{{ private_subnets[item|int - 1] }}"
         user_data: "{{ lookup('template','bootstrap.j2.sh') }}"
@@ -51,7 +51,7 @@
     - name: Add instances to ELB
       ec2_elb:
         state: present
-        ec2_elbs: [ "{{ instance_name }}-{{ opg_data.stack }}" ]
+        ec2_elbs: [ "{{ instance_name }}-{{ global_data.stack_name }}" ]
         instances: "{{ item.id }}"
       with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list  }}"
       when: has_elb
@@ -61,7 +61,7 @@
         command: create
         overwrite: yes
         record: "{{ item.tags.Name }}.internal."
-        zone: "{{ opg_data.stack }}.internal."
+        zone: "{{ global_data.stack_name }}.internal."
         hosted_zone_id: "{{ internal_dns_zone.set.zone_id }}"
         private_zone: yes
         type: A
