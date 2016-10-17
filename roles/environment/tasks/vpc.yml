@@ -18,11 +18,11 @@
     az: "{{ vpc.aws_region }}{{ item.name[-1] }}"
     resource_tags: "{{ vpc.env_tags | combine({ 'Name': item.name + '.' + global.stack_name }) }}"
   with_items: "{{ vpc.subnets }}"
-  register: subnets
+  register: subnet_data
 
 - set_fact:
-    private_subnets: "{{ subnets.results | selectattr('subnet.tags.Name', 'match', '^private.*')| map(attribute='subnet.id') | list }}"
-    public_subnets: "{{ subnets.results | selectattr('subnet.tags.Name', 'match', '^public.*')| map(attribute='subnet.id') | list }}"
+    private_subnets: "{{ subnets.results | selectattr('subnet_data.tags.Name', 'match', '^private.*')| map(attribute='subnet.id') | list }}"
+    public_subnets: "{{ subnets.results | selectattr('subnet_data.tags.Name', 'match', '^public.*')| map(attribute='subnet.id') | list }}"
 
 - name: Check if NAT gateway exists
   ec2_vpc_nat_gateway_facts:
