@@ -16,10 +16,10 @@
   tags:
     - always
 
-- set_fact:
-    private_subnets: "{{ subnets.results | selectattr('subnet_data.tags.Name', 'match', '^private.*')| map(attribute='subnet.id') | list }}"
-    public_subnets: "{{ subnets.results | selectattr('subnet_data.tags.Name', 'match', '^public.*')| map(attribute='subnet.id') | list }}"
-
+- name: Setup vars for playbook
+  set_fact:
+    private_subnets: "{{ subnet_data.subnets | selectattr('tags.Name', 'match', '^private.*')| map(attribute='id') | list }}"
+    public_subnets: "{{ subnet_data.subnets | selectattr('tags.Name', 'match', '^public.*')| map(attribute='id') | list }}"
 
 - name: get a list of all instances based on the stack tag
   ec2_remote_facts:
@@ -54,27 +54,27 @@
       when: internal_zone_id|length > 0
       register: dns_zone_records
 
-- block:
-
-    - name: expose public zone id
-      set_fact:
-        external_zone_id: "{{ hosted_zones | get_zone_id(opg_data.domain) | default(None) }}"
-
-    - name: set search domain
-      set_fact:
-        public_search_domain: "{{ target + '.' + opg_data.domain }}"
-
-    - name: Get list of DNS records for public zone
-      route53_facts:
-        query: record_sets
-        hosted_zone_id: "{{ external_zone_id }}"
-        max_items: 200
-      when: external_zone_id|length > 0
-      register: public_dns_zone_records
-
-    - name: Lookup relevant public dns entries
-      set_fact:
-        public_dns_entries: "{{ public_dns_zone_records.ResourceRecordSets |  selectattr('Name', 'search', public_search_domain) | list }}"
+#- block:
+#
+#    - name: expose public zone id
+#      set_fact:
+#        external_zone_id: "{{ hosted_zones | get_zone_id(global_data.domain_name) | default(None) }}"
+#
+#    - name: set search domain
+#      set_fact:
+#        public_search_domain: "{{ target + '.' + global_data.domain_name }}"
+#
+#    - name: Get list of DNS records for public zone
+#      route53_facts:
+#        query: record_sets
+#        hosted_zone_id: "{{ external_zone_id }}"
+#        max_items: 200
+#      when: external_zone_id|length > 0
+#      register: public_dns_zone_records
+#
+#    - name: Lookup relevant public dns entries
+#      set_fact:
+#        public_dns_entries: "{{ public_dns_zone_records.ResourceRecordSets |  selectattr('Name', 'search', public_search_domain) | list }}"
 
 
 - name: Check if NAT gateway exists
@@ -84,9 +84,9 @@
       subnet-id: "{{ public_subnets[0] }}"
   register: has_nat_gw
 
-- name: Show what we are deleting
-  debug:
-    msg: "{{ vpc_data | combine(instance_data) | combine(has_nat_gw.result) }}"
+#- name: Show what we are deleting
+#  debug:
+#    msg: "{{ vpc_data | combine(instance_data) | combine(has_nat_gw.result) }}"
 
 - name: Remove all instances
   ec2:

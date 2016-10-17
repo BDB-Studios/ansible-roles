@@ -5,7 +5,7 @@
     dns_hostnames: yes
     dns_support: yes
     internet_gateway: yes
-    resource_tags: "{{ vpc.env_tags| combine({'Name': global.stack_name + '.' + global.domain_name }) }}"
+    resource_tags: "{{ vpc.env_tags| combine({'Name': global_data.stack_name + '.' + global_data.domain_name }) }}"
     region: "{{ vpc.aws_region }}"
     wait: yes
   register: app_vpc
@@ -16,7 +16,7 @@
     vpc_id: "{{ app_vpc.vpc_id }}"
     cidr: "{{ item.address }}"
     az: "{{ vpc.aws_region }}{{ item.name[-1] }}"
-    resource_tags: "{{ vpc.env_tags | combine({ 'Name': item.name + '.' + global.stack_name }) }}"
+    resource_tags: "{{ vpc.env_tags | combine({ 'Name': item.name + '.' + global_data.stack_name }) }}"
   with_items: "{{ vpc.subnets }}"
   register: subnet_data
 
@@ -68,7 +68,7 @@
     routes:
       - dest: 0.0.0.0/0
         gateway_id: "{{ nat_gw_id }}"
-    resource_tags: "{{ vpc.env_tags | combine({ 'Name': 'private.' + global.stack_name }) }}"
+    resource_tags: "{{ vpc.env_tags | combine({ 'Name': 'private.' + global_data.stack_name }) }}"
   when: "{{ nat_gw | changed }}"
 
 - name: Create route table for public subnets
@@ -80,21 +80,21 @@
     routes:
       - dest: 0.0.0.0/0
         gateway_id: igw
-    resource_tags: "{{ vpc.env_tags | combine({ 'Name': 'public.' + global.stack_name}) }}"
+    resource_tags: "{{ vpc.env_tags | combine({ 'Name': 'public.' + global_data.stack_name}) }}"
 
 - name: Create private route53_zone
   route53_zone:
     state: present
     vpc_region: "{{ vpc.aws_region }}"
-    zone: "{{ global.stack_name }}.internal"
+    zone: "{{ global_data.stack_name }}.internal"
     vpc_id: "{{ app_vpc.vpc_id }}"
   register: internal_dns_zone
 
 - name: Create dhcp options
   ec2_vpc_dhcp_options:
-    domain_name: "{{ global.stack_name }}.internal {{ global.domain_name }}"
+    domain_name: "{{ global_data.stack_name }}.internal {{ global_data.domain_name }}"
     vpc_id: "{{ app_vpc.vpc_id }}"
     inherit_existing: True
     delete_old: False
-    tags: "{{ vpc.env_tags | combine({ 'Name': 'dhcp_opts.' + global.stack_name }) }}"
+    tags: "{{ vpc.env_tags | combine({ 'Name': 'dhcp_opts.' + global_data.stack_name }) }}"
   register: dhcp_opts
