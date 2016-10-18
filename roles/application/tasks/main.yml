@@ -2,7 +2,7 @@
 - name:  Get vpc data for stack
   ec2_vpc_net_facts:
     filters:
-      'tag:Name': "{{ [vpc_name, global.domain_name]|join('.') }}"
+      'tag:Name': "{{ [vpc_name, global_data.domain_name]|join('.') }}"
   register: vpc_data
   always_run: true
   tags:

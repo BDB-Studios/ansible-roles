@@ -44,8 +44,10 @@
         monitoring: yes
         vpc_subnet_id: "{{ private_subnets[item|int - 1] }}"
         volumes: "{{ instance_data.instance.volumes | default(omit) }}"
+        user_data: "{{ lookup('template','bootstrap.web.sh') }}"
       register: app_instance
       with_sequence: count="{{ instance_data.instance.count | default(0) }}"
+
 
     - name: Add instances to ELB
       ec2_elb:

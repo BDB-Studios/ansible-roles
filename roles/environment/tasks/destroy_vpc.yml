@@ -84,10 +84,6 @@
       subnet-id: "{{ public_subnets[0] }}"
   register: has_nat_gw
 
-#- name: Show what we are deleting
-#  debug:
-#    msg: "{{ vpc_data | combine(instance_data) | combine(has_nat_gw.result) }}"
-
 - name: Remove all instances
   ec2:
     state: absent

@@ -4,7 +4,7 @@
   route53_zone:
     state: present
     vpc_region: "{{ vpc.aws_region }}"
-    zone: "{{ global.stack_name }}.internal"
+    zone: "{{ global_data.stack_name }}.internal"
     vpc_id: "{{ vpc_id }}"
   register: internal_dns_zone
 
@@ -12,8 +12,8 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ item + '.' + global.stack_name }}.internal"
-    zone: "{{ global.stack_name }}.internal."
+    record: "{{ item + '.' + global_data.stack_name }}.internal"
+    zone: "{{ global_data.stack_name }}.internal."
     hosted_zone_id: "{{ internal_dns_zone.set.zone_id }}"
     private_zone: yes
     type: CNAME
@@ -26,10 +26,10 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ [ 'jump', global.stack_name, global.domain_name ] | join('.') }}."
-    zone: "{{ global.domain_name }}"
+    record: "{{ [ 'jump', global_data.stack_name, global_data.domain_name ] | join('.') }}."
+    zone: "{{ global_data.domain_name }}"
     type: CNAME
-    value: "{{ [ 'jump', vpc_name, global.domain_name ] | join('.') }}."
+    value: "{{ [ 'jump', vpc_name, global_data.domain_name ] | join('.') }}."
 
 - name: Add app client security groups
   ec2_group:

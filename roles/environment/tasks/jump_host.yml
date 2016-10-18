@@ -2,7 +2,7 @@
   ec2:
     key_name: "{{ vpc.ssh_key_name| default('default') }}"
     group:
-      - "{{ 'jumphost-' + global.stack_name }}"
+      - "{{ 'jumphost-' + global_data.stack_name }}"
     instance_type: t2.nano
     image: "{{ vpc.ami }}"
     wait: yes
@@ -11,8 +11,8 @@
         volume_size: "{{ root_vol_size | default(50) }}"
         delete_on_termination: True
     exact_count: "{{ jumphost_count | default(1) }}"
-    instance_tags: "{{ vpc.env_tags | combine({ 'Name': 'jumphost.' + global.stack_name }) }}"
-    count_tag: "{{ { 'Name': 'jumphost.' + global.stack_name } }}"
+    instance_tags: "{{ vpc.env_tags | combine({ 'Name': 'jumphost.' + global_data.stack_name }) }}"
+    count_tag: "{{ { 'Name': 'jumphost.' + global_data.stack_name } }}"
     monitoring: yes
     vpc_subnet_id: "{{ public_subnets[0] }}"
     assign_public_ip: yes
@@ -22,8 +22,8 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ 'jump.' + global.stack_name }}.{{ global.domain_name }}"
-    zone: "{{ global.domain_name }}"
+    record: "{{ 'jump.' + global_data.stack_name }}.{{ global_data.domain_name }}"
+    zone: "{{ global_data.domain_name }}"
     type: A
     value: "{{ jump_host.tagged_instances[0].public_ip }}"
     ttl: 60
@@ -32,8 +32,8 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ 'jump.' + global.stack_name }}.internal"
-    zone: "{{ global.stack_name }}.internal."
+    record: "{{ 'jump.' + glglobal_dataobal.stack_name }}.internal"
+    zone: "{{ global_data.stack_name }}.internal."
     hosted_zone_id: "{{ internal_dns_zone.set.zone_id }}"
     private_zone: yes
     type: A

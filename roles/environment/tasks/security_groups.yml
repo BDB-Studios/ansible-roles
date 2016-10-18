@@ -1,8 +1,8 @@
 - block:
   - name: Create jumphost security group
     ec2_group:
-      name: "jumphost-{{ global.stack_name }}"
-      description: "{{ item.description }} for {{ global.stack_name }}"
+      name: "jumphost-{{ global_data.stack_name }}"
+      description: "{{ item.description }} for {{ global_data.stack_name }}"
       rules: "{{ item.ruleset | rules_from_dict() }}"
       state: present
       vpc_id: "{{ app_vpc['vpc_id'] }}"
@@ -12,8 +12,8 @@
 
   - name: Create jumphost client security group
     ec2_group:
-      name: "jumphost-client-{{ global.stack_name }}"
-      description: "jumphost client security group for {{ global.stack_name }}"
+      name: "jumphost-client-{{ global_data.stack_name }}"
+      description: "jumphost client security group for {{ global_data.stack_name }}"
       rules: "{{ [ jump_sg.results | get_sg_id_result ]| make_rules('22', 'tcp', True) }}"
       state: present
       vpc_id: "{{ app_vpc['vpc_id'] }}"

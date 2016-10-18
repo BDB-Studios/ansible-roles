@@ -86,10 +86,10 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ item.private_dns +'.' + global.stack_name }}.internal."
-    zone: "{{ global.stack_name }}.internal."
+    record: "{{ item.private_dns +'.' + global_data.stack_name }}.internal."
+    zone: "{{ global_data.stack_name }}.internal."
     hosted_zone_id: "{{ internal_dns_zone.set.zone_id }}"
-    value: "{{ rds_instance_facts.results |selectattr('instance.id','match',item.db_name + '-' + global.stack_name)| map(attribute='instance.endpoint')| list| first }}"
+    value: "{{ rds_instance_facts.results |selectattr('instance.id','match',item.db_name + '-' + global_data.stack_name)| map(attribute='instance.endpoint')| list| first }}"
     type: CNAME
     private_zone: yes
     ttl: 300
