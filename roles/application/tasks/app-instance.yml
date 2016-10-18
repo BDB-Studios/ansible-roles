@@ -53,6 +53,7 @@
         ec2_elbs: [ "{{ instance_name }}-{{ global_data.stack_name }}" ]
         instance_id: "{{ item.id }}"
       with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list  }}"
+      ignore_errors: yes
       when: has_elb
 
     - name: Add route 53 records for internal domain
