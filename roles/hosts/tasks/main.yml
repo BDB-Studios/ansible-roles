@@ -1,0 +1,46 @@
+
+
+- name: Make sure we have a 'wheel' group
+  group:
+    name: wheel
+    state: present
+
+- name: Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+
+- block:
+  - name: Add sudoers users to wheel group
+    user:
+      name: "{{ item.user_name }}"
+      groups: wheel
+      append: yes
+      state: present
+      createhome: yes
+    with_items: "{{ secrets.users | default([]) }}"
+
+  - name: Set up authorized keys for the sudors
+    authorized_key:
+      user: "{{ item.user_name }}"
+      key:  "{{ item.public_key }}"
+    when: item.public_key is defined
+    with_items: "{{ secrets.users | default([]) }}"
+
+  when: secrets.users is defined
+
+- name: Create app user
+  user:
+    name: app
+    groups: app
+    append: yes
+    state: present
+    createhome: no
+
+#- name: Remove the default user
+#  user:
+#    name: ubuntu
+#    state: absent
+
