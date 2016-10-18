@@ -65,6 +65,7 @@
             --backup-retention-period {{ item.backup_retention }}
             --preferred-backup-window {{ item.backup_window }}
             --no-publicly-accessible
+            --tags '{{ item.tags|to_json }}'
             --{{ item.multi_az | default ('no-multi-az') }}"
   register: rds_creation_result
   failed_when: >
