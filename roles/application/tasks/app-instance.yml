@@ -48,7 +48,10 @@
       with_sequence: count="{{ instance_data.instance.count | default(0) }}"
 
     - name: Add hosts to webserver group
-      add_host: name="{{item.private_ip}}" groups="webserver, hosts"
+      add_host:
+        name: "{{item.private_ip}}"
+        groups: "webserver, hosts"
+        ansible_user: "ubuntu"
       with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list  }}"
 
     - name: Add instances to ELB

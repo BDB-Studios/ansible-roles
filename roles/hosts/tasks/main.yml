@@ -18,7 +18,7 @@
       name: "{{ item.user_name }}"
       groups: wheel
       append: yes
-      state: present
+      state: "{{ item.state }}"
       createhome: yes
     with_items: "{{ secrets.users | default([]) }}"
 
