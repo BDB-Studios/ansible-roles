@@ -19,7 +19,7 @@
   register: jump_host
 
 - name: Add hosts to jumphost group
-  add_host: name="{{item.private_ip}}" groups="jumphost"
+  add_host: name="{{item.private_ip}}" groups="jumphost, hosts"
   with_items: "{{ jump_host.results | default([]) | map(attribute='tagged_instances') | list  }}"
 
 - name: Add route 53 entries for jump in the public domain
