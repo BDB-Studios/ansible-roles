@@ -1,8 +1,8 @@
 ---
 - name: Create app security group
     ec2_group:
-      name: "{{ app.name }}-{{ opg_data.stack }}"
-      description: "Custom {{ app.name }} SG for {{ opg_data.stack }}"
+      name: "{{ app.name }}-{{ global_data.stack_name }}"
+      description: "Custom {{ app.name }} SG for {{ global_data.stack_name }}"
       rules: "{{ item.ruleset | rules_from_dict() }}"
       state: present
       vpc_id: "{{ app_vpc['vpc_id'] }}"

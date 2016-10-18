@@ -18,6 +18,10 @@
     assign_public_ip: yes
   register: jump_host
 
+- name: Add hosts to jumphost group
+  add_host: name="{{item.private_ip}}" groups="jumphost"
+  with_items: "{{ jump_host.results | default([]) | map(attribute='tagged_instances') | list  }}"
+
 - name: Add route 53 entries for jump in the public domain
   route53:
     command: create
@@ -32,7 +36,7 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ 'jump.' + glglobal_dataobal.stack_name }}.internal"
+    record: "{{ 'jump.' + global_data.stack_name }}.internal"
     zone: "{{ global_data.stack_name }}.internal."
     hosted_zone_id: "{{ internal_dns_zone.set.zone_id }}"
     private_zone: yes
