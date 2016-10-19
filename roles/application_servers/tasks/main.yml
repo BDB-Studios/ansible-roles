@@ -1,11 +1,50 @@
-- name: Install nginx
+- name: Install nginx from apt
   apt:
     name: nginx
     state: latest
   become: true
 
-- name: Install PHP7fpm
+- name: Start nginx
+  service:
+    name: nginx
+    state: started
+  become: true
+
+- name: Install PHP7fpm packages
   apt:
-    name: php7.0-fpm
+    name: "{{ item }}"
     state: latest
   become: true
+  with_items: " global_data.php7_packages| default('php7-fpm')"
+
+- block:
+  - name: create healthcheck default site
+    copy:
+      src: "./files/nginx.default.cfg"
+      dest: "/etc/nginx/sites-available/default"
+      owner: root
+      group: root
+      mode: 644
+      backup: yes
+    become: true
+
+  - name: create healtcheck dir if it doesn't exist
+    file:
+      path: /srv/healthcheck
+      state: directory
+    become: true
+
+  - name: Copy the healthcheck file into the directory
+    copy:
+      src: "./files/index.html"
+      dest: "/srv/healthcheck/index.html"
+      owner: root
+      group: root
+      mode: 644
+    become: true
+
+  - name: Reload nginx
+    service:
+      name: nginx
+      state: reloaded
+    become: true
