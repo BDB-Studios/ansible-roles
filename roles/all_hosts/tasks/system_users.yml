@@ -45,6 +45,7 @@
       name: app
       groups: app
       append: yes
+      shell: /sbin/nologin
       state: present
       home: /srv/app
     become: true
