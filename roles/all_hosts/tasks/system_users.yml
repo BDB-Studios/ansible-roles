@@ -33,12 +33,19 @@
 
   when: secrets.users is defined
 
-- name: Create app user
-  user:
-    name: app
-    groups: app
-    append: yes
-    state: present
-    home: /srv/app
-  become: true
+- block:
+  - name: Make sure we have an app group
+    group:
+      name: app
+      state: present
+    become: true
+
+  - name: Create app user
+    user:
+      name: app
+      groups: app
+      append: yes
+      state: present
+      home: /srv/app
+    become: true
 
