@@ -18,7 +18,7 @@
             name: "{{ elbdata.elb_sg.name }}"
             description: "{{ elbdata.elb_sg.desc }}"
             rules: "{{ elbdata.elb_sg.ruleset | rules_from_dict([elb_client_sg_id]) }}"
-            rules_egress: []
+            rules_egress: "{{ elbdata.elb_sg.ruleset_egress | default([]) }}"
             vpc_id: "{{ vpc_id }}"
           register: elb_security_group_1
       when: elbdata.elb_sg.client_sg is defined
@@ -29,7 +29,7 @@
             name: "{{ elbdata.elb_sg.name }}"
             description: "{{ elbdata.elb_sg.desc }}"
             rules: "{{ elbdata.elb_sg.ruleset | rules_from_dict() }}"
-            rules_egress: []
+            rules_egress: "{{ elbdata.elb_sg.ruleset_egress | default([]) }}"
             vpc_id: "{{ vpc_id }}"
           register: elb_security_group_2
 
