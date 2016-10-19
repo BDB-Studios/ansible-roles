@@ -1,9 +1,12 @@
-
-
+- name: Spit something out
+  set_fact:
+    running_users: "Yes we are"
+    
 - name: Make sure we have a 'wheel' group
   group:
     name: wheel
     state: present
+    become: true
 
 - name: Allow 'wheel' group to have passwordless sudo
   lineinfile:
@@ -11,6 +14,7 @@
     state: present
     regexp: '^%wheel'
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    become: true
 
 - block:
   - name: Add sudoers users to wheel group
@@ -20,6 +24,7 @@
       append: yes
       state: "{{ item.state }}"
       createhome: yes
+    become: true
     with_items: "{{ secrets.users | default([]) }}"
 
   - name: Set up authorized keys for the sudors
@@ -27,6 +32,7 @@
       user: "{{ item.user_name }}"
       key:  "{{ item.public_key }}"
     when: item.public_key is defined
+    become: true
     with_items: "{{ secrets.users | default([]) }}"
 
   when: secrets.users is defined
@@ -38,7 +44,7 @@
     append: yes
     state: present
     createhome: no
-
+  become: true
 #- name: Remove the default user
 #  user:
 #    name: ubuntu
