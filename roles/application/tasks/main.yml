@@ -79,4 +79,7 @@
       tags:
         - instances
 
+    - name: Wait for provisioning of hosts to finish
+      pause: minutes=2
+
   when: destroy_stack is undefined or not destroy_stack

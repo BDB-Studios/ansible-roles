@@ -48,10 +48,6 @@
       register: app_instance
       with_sequence: count="{{ instance_data.instance.count | default(0) }}"
 
-    - name: Add hosts to groups
-      add_host: name="{{item.private_ip}}" groups="application_servers, all_hosts"
-      with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list  }}"
-
     - name: Add instances to ELB
       ec2_elb:
         state: present
@@ -73,3 +69,10 @@
         value: "{{ item.private_ip }}"
         ttl: 300
       with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list }}"
+
+    - name: Add hosts to groups
+        add_host:
+          name: "{{item.private_ip}}"
+          groups: "application_servers, all_hosts"
+          internal_hostname: "{{ item.tags.Name }}.internal"
+        with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list  }}"
