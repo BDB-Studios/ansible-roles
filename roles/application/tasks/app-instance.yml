@@ -71,8 +71,8 @@
       with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list }}"
 
     - name: Add hosts to groups
-        add_host:
-          name: "{{item.private_ip}}"
-          groups: "application_servers, all_hosts"
-          internal_hostname: "{{ item.tags.Name }}.internal"
-        with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list  }}"
+      add_host:
+        name: "{{item.private_ip}}"
+        groups: "application_servers, all_hosts"
+        internal_hostname: "{{ item.tags.Name }}.internal"
+      with_items: "{{ app_instance.results | default([]) | map(attribute='tagged_instances') | list  }}"

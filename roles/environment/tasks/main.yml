@@ -16,8 +16,8 @@
       - jumphost
   when: "{{ vpc.state | default('present') == 'present' }}"
 
-  - name: Wait for provisioning of hosts to finish
-    pause: minutes=2
+- name: Wait for provisioning of hosts to finish
+  pause: minutes=2
 
 #cleanup/delete vpc
 - block:
