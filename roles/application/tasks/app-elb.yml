@@ -29,7 +29,7 @@
             name: "{{ elbdata.elb_sg.name }}"
             description: "{{ elbdata.elb_sg.desc }}"
             rules: "{{ elbdata.elb_sg.ruleset | rules_from_dict() }}"
-            rules_egress: "{{ elbdata.elb_sg.ruleset_egress | default([]) }}"
+            rules_egress: "{{ elbdata.elb_sg.ruleset_egress | rules_from_dict() }}"
             vpc_id: "{{ vpc_id }}"
           register: elb_security_group_2
 
