@@ -16,6 +16,7 @@
     monitoring: yes
     vpc_subnet_id: "{{ public_subnets[0] }}"
     assign_public_ip: yes
+    user_data: "{{ lookup('template', 'bootstrap.sh') }}"
   register: jump_host
 
 - name: Add route 53 entries for jump in the public domain
