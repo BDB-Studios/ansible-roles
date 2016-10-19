@@ -15,7 +15,7 @@
     name: "{{ item }}"
     state: latest
   become: true
-  with_items: " global_data.php7_packages| default('php7.0-fpm')"
+  with_items: "{{ global_data.php7_packages | default('php7.0-fpm') }}"
 
 - block:
   - name: create healthcheck default site
