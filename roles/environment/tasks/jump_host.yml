@@ -30,7 +30,7 @@
     ttl: 60
 
 - name: Add hosts to jumphost group
-  add_host: name="{{ 'jump.' + global_data.stack_name + '.' + global_data.domain_name }}" groups="jumphost, hosts"
+  add_host: name="{{ 'jump.' + global_data.stack_name + '.' + global_data.domain_name }}" groups="jumphost, all_hosts"
 
 - name: Add route 53 entries for jump in the private domain
   route53:
