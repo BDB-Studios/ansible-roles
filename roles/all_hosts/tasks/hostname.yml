@@ -1,0 +1,19 @@
+- name: Get our ip address
+  shell: "ifconfig eth0 | grep 'inet addr' | cut -d: -f2 | awk '{ print $1}'"
+  register: system_ip_address
+
+- debug: msg="{{system_ip_address}}"
+
+- name: Set our hostname to our ip address
+  action: "cat {{system_ip_address}} > /etc/hostname"
+  become: true
+  register: set_hostname
+
+- debug: msg="{{set_hostname}}"
+
+- name: Set our hostname to our ip address
+  action: "hostname {{system_ip_address}}"
+  become: true
+  register: set_hostname_temp
+
+- debug: msg="{{set_hostname_temp}}"

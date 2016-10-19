@@ -1,7 +1,3 @@
-- name: Spit something out
-  set_fact:
-    running_users: "Yes we are"
-    
 - name: Make sure we have a 'wheel' group
   group:
     name: wheel
