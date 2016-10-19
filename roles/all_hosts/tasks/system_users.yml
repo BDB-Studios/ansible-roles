@@ -2,7 +2,7 @@
   group:
     name: wheel
     state: present
-    become: true
+  become: true
 
 - name: Allow 'wheel' group to have passwordless sudo
   lineinfile:
@@ -10,7 +10,7 @@
     state: present
     regexp: '^%wheel'
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
-    become: true
+  become: true
 
 - block:
   - name: Add sudoers users to wheel group
@@ -39,10 +39,6 @@
     groups: app
     append: yes
     state: present
-    createhome: no
+    home: /srv/app
   become: true
-#- name: Remove the default user
-#  user:
-#    name: ubuntu
-#    state: absent
 
