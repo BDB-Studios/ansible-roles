@@ -36,14 +36,14 @@
 - block:
   - name: Make sure we have an app group
     group:
-      name: app
+      name: www-data
       state: present
     become: true
 
   - name: Create app user
     user:
       name: app
-      groups: app
+      groups: www-data
       append: yes
       shell: /sbin/nologin
       state: present
