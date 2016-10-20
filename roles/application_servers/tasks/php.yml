@@ -1,0 +1,6 @@
+- name: Install PHP7fpm packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+  become: true
+  with_items: "{{ global_data.packages.php_packages | default('php7.0-fpm') }}"
