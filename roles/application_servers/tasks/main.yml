@@ -1,7 +1,7 @@
 - name: install nginx
   include: nginx.yml
-  when: "{{ global_data.packages.nginx }}" is defined
+  when: global_data.packages.nginx is defined
 
 - name: install php
   include: php.yml
-  when: "{{ global_data.packages.php }}" is defined
+  when: global_data.packages.php is defined

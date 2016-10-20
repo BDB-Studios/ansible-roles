@@ -26,7 +26,7 @@
       path: /srv/healthcheck
       state: directory
       owner: app
-      group: www-data
+      group: users
     become: true
 
   - name: Copy the healthcheck file into the directory
@@ -34,7 +34,7 @@
       src: "./files/index.html"
       dest: "/srv/healthcheck/index.html"
       owner: app
-      group: www-data
+      group: users
       mode: 644
     become: true
 
