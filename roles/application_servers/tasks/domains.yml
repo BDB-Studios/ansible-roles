@@ -1,0 +1,24 @@
+- name: create site
+  template:
+    src: "./files/nginx.domain.tmpl"
+    dest: "/etc/nginx/sites-available/{{ global_data.stack_name }}"
+    owner: root
+    group: root
+    mode: 644
+    backup: yes
+  become: true
+
+- name: create site root unless it doesn't exist
+  file:
+    path: "{{ domain_data.document_root }}"
+    state: directory
+    owner: app
+    group: users
+  become: true
+
+- name: Activate the site
+  file:
+    src: "/etc/nginx/sites-available/{{ global_data.stack_name }}"
+    dest: "/etc/nginx/sites-enabled/{{ global_data.stack_name }}"
+    state: link
+  become: true

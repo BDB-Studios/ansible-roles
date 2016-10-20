@@ -38,8 +38,14 @@
       mode: 644
     become: true
 
-  - name: Reload nginx
-    service:
-      name: nginx
-      state: reloaded
-    become: true
+- name: Create domains
+  include: domains.yml
+  loop_control:
+    loop_var: domain_data
+  with_items: "{{ global_data.sites | default([]) }}"
+
+- name: Reload nginx
+  service:
+    name: nginx
+    state: reloaded
+  become: true

@@ -1,0 +1,29 @@
+server {
+    server_name  {{ global_data.domain }};
+    rewrite ^(.*) http://{{ global_data.domain }}$1 permanent;
+}
+
+server {
+    listen 80;
+    server_name {{ global_data.domain }};
+            root   {{ domain_data.document_root };
+            index index.php;
+        include /etc/nginx/security;
+
+ # Logging --
+ access_log  /var/log/nginx/{{ global_data.domain }}.access.log;
+ error_log  /var/log/nginx/{{ global_data.domain }}.error.log notice;
+
+        # serve static files directly
+        location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt)$ {
+            access_log        off;
+            expires           max;
+        }
+
+        location ~ \.php$ {
+        try_files $uri =404;
+            fastcgi_pass unix:/var/run/php7-fpm/{{ global_data.domain }}.socket;
+            fastcgi_index index.php;
+            include /etc/nginx/fastcgi_params;
+     }
+}
