@@ -1,0 +1,41 @@
+- block:
+    - name: Create core stack components
+      include: network.yml
+      tags:
+        - network
+        - instances
+
+    - name: Create rds resources
+      include: rds.yml
+      with_items: "{{ rds_dbs | default ([]) }}"
+      loop_control:
+        loop_var: rds_data
+      when: rds_dbs is defined
+      tags:
+        - rds
+
+    - name: Create elasticache resources
+      include: elasticache.yml
+      with_items: "{{ elasticache_clusters | default([]) }}"
+      loop_control:
+        loop_var: ec_data
+      when: elasticache_clusters is defined
+      tags:
+        - elasticache
+
+    - name: Create IAM resources
+      include: iam.yml
+      when: iam_role_data is defined
+      tags:
+        - iam
+
+    - name: Create infrastructure for app
+      include: infra.yml
+      with_items: "{{ app_data |default([]) }}"
+      loop_control:
+        loop_var: appdata
+      tags:
+        - instances
+
+    - name: Wait for provisioning of hosts to finish
+      pause: minutes=2
