@@ -10,20 +10,22 @@ server {
             index index.php;
         include /etc/nginx/security;
 
- # Logging --
- access_log  /var/log/nginx/{{ domain_data.site_name}}.access.log;
- error_log  /var/log/nginx/{{ domain_data.site_name }}.error.log notice;
+     # Logging --
+     access_log  /var/log/nginx/{{ domain_data.site_name}}.access.log;
+     error_log  /var/log/nginx/{{ domain_data.site_name }}.error.log notice;
 
-        # serve static files directly
-        location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt)$ {
-            access_log        off;
-            expires           max;
-        }
+    # serve static files directly
+    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt)$ {
+        access_log        off;
+        expires           max;
+    }
 
-        location ~ \.php$ {
-        try_files $uri =404;
-            fastcgi_pass unix:/var/run/php7-fpm/{{ domain_data.site_name }}.socket;
-            fastcgi_index index.php;
-            include /etc/nginx/fastcgi_params;
-     }
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+
+        # With php7.0-cgi alone:
+        # fastcgi_pass 127.0.0.1:9000;
+        # With php7.0-fpm:
+        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+    }
 }
