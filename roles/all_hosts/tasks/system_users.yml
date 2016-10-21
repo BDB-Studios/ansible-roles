@@ -20,10 +20,11 @@
       append: yes
       state: "{{ item.state }}"
       createhome: yes
+      shell: /bin/bash
     become: true
     with_items: "{{ secrets.users | default([]) }}"
 
-  - name: Set up authorized keys for the sudors
+  - name: Set up authorized keys for the sudoers
     authorized_key:
       user: "{{ item.user_name }}"
       key:  "{{ item.public_key }}"
@@ -36,14 +37,14 @@
 - block:
   - name: Make sure we have an app group
     group:
-      name: www-data
+      name: app
       state: present
     become: true
 
   - name: Create app user
     user:
       name: app
-      groups: www-data
+      groups: app
       append: yes
       shell: /sbin/nologin
       state: present
