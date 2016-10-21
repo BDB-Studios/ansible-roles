@@ -11,8 +11,8 @@ server {
         include /etc/nginx/security;
 
  # Logging --
- access_log  /var/log/nginx/{{ global_data.domain }}.access.log;
- error_log  /var/log/nginx/{{ global_data.domain }}.error.log notice;
+ access_log  /var/log/nginx/{{ domain_data.site_name}}.access.log;
+ error_log  /var/log/nginx/{{ domain_data.site_name }}.error.log notice;
 
         # serve static files directly
         location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt)$ {
@@ -22,7 +22,7 @@ server {
 
         location ~ \.php$ {
         try_files $uri =404;
-            fastcgi_pass unix:/var/run/php7-fpm/{{ global_data.domain }}.socket;
+            fastcgi_pass unix:/var/run/php7-fpm/{{ domain_data.site_name }}.socket;
             fastcgi_index index.php;
             include /etc/nginx/fastcgi_params;
      }
