@@ -2,7 +2,7 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
 
-    server_name {{ global_data.domain }};
+    server_name www-{{ global_data.domain }};
     root   {{ domain_data.document_root }};
     index index.php;
 
