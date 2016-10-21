@@ -5,3 +5,10 @@
 - name: install php
   include: php.yml
   when: global_data.packages.php is defined
+
+- name: Create domains
+  include: domains.yml
+  loop_control:
+    loop_var: domain_data
+  with_items: "{{ global_data.sites | default([]) }}"
+  when: global_data.sites is defined
