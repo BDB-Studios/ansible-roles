@@ -1,2 +1,5 @@
 - name: Create users and groups
   include: system_users.yml
+
+- name: Make sure out clocks are in sync
+  include: ntp.yml

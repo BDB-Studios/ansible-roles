@@ -1,0 +1,27 @@
+- name: install ntp
+  apt:
+    name: ntp
+    state: latest
+  become: true
+
+- name: Set Time Zone
+  tasks:
+    - name: Set timezone variables
+      copy: content='Europe/London'
+            dest=/etc/timezone
+            owner=root
+            group=root
+            mode=0644
+            backup=yes
+      notify:
+        - update timezone
+  handlers:
+    - name: update timezone
+      command: dpkg-reconfigure --frontend noninteractive tzdata
+  become: true
+
+- name: Restart cron
+  service:
+    name: cron
+    state: restarted
+  become: true
