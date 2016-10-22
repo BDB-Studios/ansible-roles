@@ -11,14 +11,27 @@
   become: true
 
 - block:
+  - name: remove nginx default site
+    file:
+      path: "/etc/nginx/sites-enabled/default"
+      state: absent
+    become: true
+
   - name: create healthcheck default site
     copy:
       src: "./files/nginx.default.cfg"
-      dest: "/etc/nginx/sites-available/default"
+      dest: "/etc/nginx/sites-available/999-healthcheck"
       owner: root
       group: root
       mode: 644
       backup: yes
+    become: true
+
+  - name: Enable healthcheck site
+    file:
+      src: "/etc/nginx/sites-available/999-healthcheck"
+      dest: "/etc/nginx/sites-enabled/999-healthcheck"
+      state: link
     become: true
 
   - name: create healtcheck dir if it doesn't exist

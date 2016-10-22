@@ -1,20 +1,42 @@
-- name: create site
-  template:
-    src: "./files/nginx.domain.tmpl"
-    dest: "/etc/nginx/sites-available/{{ domain_data.site_name }}"
-    owner: root
-    group: root
-    mode: 644
-    backup: yes
-  become: true
+- block:
+    - name: create site
+      template:
+        src: "./files/nginx.domain.tmpl"
+        dest: "/etc/nginx/sites-available/{{ domain_data.site_name }}"
+        owner: root
+        group: root
+        mode: 644
+        backup: yes
+      become: true
 
-- name: create site root unless it doesn't exist
-  file:
-    path: "{{ domain_data.document_root }}"
-    state: directory
-    owner: app
-    group: users
-  become: true
+    - name: create site root unless it doesn't exist
+      file:
+        path: "{{ domain_data.document_root }}"
+        state: directory
+        owner: app
+        group: users
+      become: true
+  when: domain_data.is_symfony is not defined or not domain_data.is_symfony|bool
+
+- block:
+    - name: create site
+      template:
+        src: "./files/nginx.symfony.tmpl"
+        dest: "/etc/nginx/sites-available/{{ domain_data.site_name }}"
+        owner: root
+        group: root
+        mode: 644
+        backup: yes
+      become: true
+
+    - name: create site root unless it doesn't exist
+      file:
+        path: "{{ domain_data.document_root }}"
+        state: directory
+        owner: app
+        group: users
+      become: true
+  when: domain_data.is_symfony is defined and domain_data.is_symfony|bool
 
 - name: Activate the site
   file:
