@@ -37,7 +37,7 @@
         state: link
       become: true
 
-  when: global_data.php.use_apcu is defined and global_data.php
+  when: global_data.packages.php.use_apcu is defined and global_data.packages.php
 
 - name: Update php.ini
   copy:
