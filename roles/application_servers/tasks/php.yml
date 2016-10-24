@@ -5,38 +5,72 @@
   become: true
   with_items: "{{ global_data.packages.php_packages | default('php7.0-fpm') }}"
 
-  - name: Update php.ini
-    copy:
-      src: "./files/php.ini.tmpl"
-      dest: "/etc/php/7.0/fpm/php.ini"
-      owner: root
-      group: root
-      mode: 644
-      backup: yes
-    become: true
+- block:
+# http://stackoverflow.com/questions/34170434/how-install-apcu-as-php7-extension-on-debian
 
-  - name: Update php-fpm.conf
-    copy:
-      src: "./files/php-fpm.conf.tmpl"
-      dest: "/etc/php/7.0/fpm/php-fpm.conf"
-      owner: root
-      group: root
-      mode: 644
-      backup: yes
-    become: true
+    - name: Export module name
+      set_fact:
+        module_name: apcu
 
-  - name: Update www.conf
-    copy:
-      src: "./files/www.conf.tmpl"
-      dest: "/etc/php/7.0/fpm/pool.d/www.conf"
-      owner: root
-      group: root
-      mode: 644
-      backup: yes
-    become: true
+    - name: Update pear channel
+      command: pecl channel-update pecl.php.net
+      become: true
 
-  - name: Reload php-fpm
-    service:
-      name: php7.0-fpm
-      state: reloaded
-    become: true
+    - name: Install apcu
+      command: pecl install apcu
+      become: true
+
+    - name: Add config file to modules-available
+      template:
+        src: "./files/module.ini.tmpl"
+        desc: "/etc/php/7.0/mods-available/{{ module_name }}.ini"
+        owner: root
+        group: root
+        mode: 644
+        replace: true
+      become: true
+
+    - name: activate the module
+      file:
+        src: "/etc/php/7.0/mods-available/{{ module_name }}.ini"
+        dest: "/etc/php/7.0/fpm/conf.d/20-{{ module_name }}.ini"
+        state: link
+      become: true
+
+  when: global_data.php.use_apcu is defined and global_data.php
+
+- name: Update php.ini
+  copy:
+    src: "./files/php.ini.tmpl"
+    dest: "/etc/php/7.0/fpm/php.ini"
+    owner: root
+    group: root
+    mode: 644
+    backup: yes
+  become: true
+
+- name: Update php-fpm.conf
+  copy:
+    src: "./files/php-fpm.conf.tmpl"
+    dest: "/etc/php/7.0/fpm/php-fpm.conf"
+    owner: root
+    group: root
+    mode: 644
+    backup: yes
+  become: true
+
+- name: Update www.conf
+  copy:
+    src: "./files/www.conf.tmpl"
+    dest: "/etc/php/7.0/fpm/pool.d/www.conf"
+    owner: root
+    group: root
+    mode: 644
+    backup: yes
+  become: true
+
+- name: Reload php-fpm
+  service:
+    name: php7.0-fpm
+    state: reloaded
+  become: true
