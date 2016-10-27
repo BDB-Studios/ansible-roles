@@ -2,6 +2,12 @@
   include: nginx.yml
   when: global_data.packages.nginx is defined
 
+- name: install git
+  apt:
+    name: git
+    state: latest
+  become: true
+  
 - name: install php
   include: php.yml
   when: global_data.packages.php is defined
