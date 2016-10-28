@@ -7,7 +7,7 @@
     name: git
     state: latest
   become: true
-  
+
 - name: install php
   include: php.yml
   when: global_data.packages.php is defined

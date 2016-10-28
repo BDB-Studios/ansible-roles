@@ -6,7 +6,7 @@ server {
     listen 80;
 
     server_name www-{{ global_data.domain }};
-    root   {{ domain_data.document_root }}/web;
+    root   {{ domain_data.document_root }}/_releases/web;
 
     access_log  /var/log/nginx/{{ domain_data.site_name }}.access.log;
     error_log  /var/log/nginx/{{ domain_data.site_name }}.error.log notice;

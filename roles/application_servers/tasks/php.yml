@@ -5,6 +5,7 @@
   become: true
   with_items: "{{ global_data.packages.php_packages | default('php7.0-fpm') }}"
 
+- debug: msg="{{ global_data.packages.php.use_apcu }}"
 - block:
 # http://stackoverflow.com/questions/34170434/how-install-apcu-as-php7-extension-on-debian
 
