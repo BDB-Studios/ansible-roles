@@ -1,0 +1,33 @@
+- assert:
+    that:
+      - target is defined
+
+- name: Set target zone
+  set_fact:
+    target_zone_name: "{{target}}.internal"
+
+- name: List all hosted zones
+  route53_facts:
+    query: hosted_zone
+    hosted_zone_method: list_by_name
+  register: hosted_zones
+
+- name: Extract our zone id
+  set_fact:
+    internal_zone_id: "{{ hosted_zones | get_zone_id(global_data.stack_name + '.internal') | default(None) }}"
+
+- name: List our internal ips
+  route53_facts:
+    query: record_sets
+    hosted_zone_id: "{{ internal_zone_id }}"
+  register: record_sets
+
+- name: Get our application_servers ips
+  set_fact:
+    application_servers: "{{ record_sets | get_attached_ips('webserver') }}"
+
+- name: Add hosts to groups
+  add_host:
+    name: "{{ item }}"
+    groups: "application_servers, all_hosts"
+  with_items: "{{ application_servers }}"

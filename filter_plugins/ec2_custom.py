@@ -110,6 +110,19 @@ def get_launch_configs(launch_configs, stack_name):
 
     return configs
 
+def get_attached_ips(record_sets, filter):
+    attached_ips = []
+
+    if 'ResourceRecordSets' in record_sets:
+        for record_set in record_sets['ResourceRecordSets']:
+            if "A" == record_set['Type']:
+                if 'Name' in record_set and filter in record_set['Name']:
+                    if 'ResourceRecords' in record_set:
+                        for resource in record_set['ResourceRecords']:
+                            attached_ips.append(resource["Value"])
+
+    return attached_ips
+
 
 class FilterModule(object):
     def filters(self):
@@ -119,6 +132,7 @@ class FilterModule(object):
             'get_sg_result': get_sg_result,
             'get_sg_id_result': get_sg_id_result,
             'get_zone_id': get_zone_id,
-            'get_launch_configs': get_launch_configs
+            'get_launch_configs': get_launch_configs,
+            'get_attached_ips': get_attached_ips
         }
         return filter_list
