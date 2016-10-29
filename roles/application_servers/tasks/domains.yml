@@ -9,7 +9,7 @@
         backup: yes
       become: true
 
-    - name: create site root unless it doesn't exist
+    - name: create site root if it doesn't exist
       file:
         path: "{{ domain_data.document_root }}"
         state: directory

@@ -42,8 +42,12 @@
       group: users
     become: true
 
+  - name: Extract instance_id
+    command: hostname
+    register: instance_id
+
   - name: Copy the healthcheck file into the directory
-    copy:
+    template:
       src: "./files/index.html"
       dest: "/srv/healthcheck/index.html"
       owner: app
