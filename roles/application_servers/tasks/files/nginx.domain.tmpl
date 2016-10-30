@@ -1,6 +1,6 @@
 server {
-    listen 80;
-    listen [::]:80;
+    listen {{ domain_data.port | default(80) }};
+    listen [::]:{{ domain_data.port | default(80) }};
 
     server_name www-{{ global_data.domain }};
     root   {{ domain_data.document_root }};

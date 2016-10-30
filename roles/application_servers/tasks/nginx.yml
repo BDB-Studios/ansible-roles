@@ -4,6 +4,12 @@
     state: latest
   become: true
 
+- name: Create ssl directory
+  file:
+    path: "/etc/nginx/ssl"
+    state: directory
+  become: true
+
 - name: Start nginx
   service:
     name: nginx

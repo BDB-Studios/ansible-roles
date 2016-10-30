@@ -3,10 +3,15 @@ upstream phpfcgi {
 }
 
 server {
-    listen 80;
+    listen {{ domain_data.port | default(443) }} ssl;
 
-    server_name www-{{ global_data.domain }};
+    # server_name {{ target }}.{{ global_data.domain }};
+    server_name _;
     root   {{ domain_data.document_root }}/_releases/web;
+
+    add_header Strict-Transport-Security "max-age=31536000";
+    ssl_certificate /etc/nginx/ssl/{{ target }}.{{ global_data.domain }}.crt;
+    ssl_certificate_key /etc/nginx/ssl/{{ target }}.{{ global_data.domain }}.pem;
 
     access_log  /var/log/nginx/{{ domain_data.site_name }}.access.log;
     error_log  /var/log/nginx/{{ domain_data.site_name }}.error.log notice;
