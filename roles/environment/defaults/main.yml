@@ -27,7 +27,3 @@ db:
   db_name: 'api'
   instance_name: 'api'
   instance_type: 'db.t2.medium'
-
-global_data:
-  domain_name: aws.bdb-studios.co.uk
-  stack_name: staging

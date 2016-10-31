@@ -26,10 +26,10 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ [ 'jump', global_data.stack_name, global_data.domain_name ] | join('.') }}."
-    zone: "{{ global_data.domain_name }}"
+    record: "{{ [ 'jump', global_data.stack_name, global_data.domain ] | join('.') }}."
+    zone: "{{ global_data.domain }}"
     type: CNAME
-    value: "{{ [ 'jump', vpc_name, global_data.domain_name ] | join('.') }}."
+    value: "{{ [ 'jump', vpc_name, global_data.domain ] | join('.') }}."
 
 - name: Add app client security groups
   ec2_group:

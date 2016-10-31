@@ -58,11 +58,11 @@
 #
 #    - name: expose public zone id
 #      set_fact:
-#        external_zone_id: "{{ hosted_zones | get_zone_id(global_data.domain_name) | default(None) }}"
+#        external_zone_id: "{{ hosted_zones | get_zone_id(global_data.domain) | default(None) }}"
 #
 #    - name: set search domain
 #      set_fact:
-#        public_search_domain: "{{ target + '.' + global_data.domain_name }}"
+#        public_search_domain: "{{ target + '.' + global_data.domain }}"
 #
 #    - name: Get list of DNS records for public zone
 #      route53_facts:

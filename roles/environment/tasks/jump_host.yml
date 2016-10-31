@@ -23,14 +23,14 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ 'jump.' + global_data.stack_name }}.{{ global_data.domain_name }}"
-    zone: "{{ global_data.domain_name }}"
+    record: "{{ 'jump.' + global_data.stack_name }}.{{ global_data.domain }}"
+    zone: "{{ global_data.domain }}"
     type: A
     value: "{{ jump_host.tagged_instances[0].public_ip }}"
     ttl: 60
 
 - name: Add hosts to jumphost group
-  add_host: name="{{ 'jump.' + global_data.stack_name + '.' + global_data.domain_name }}" groups="jumphost, all_hosts"
+  add_host: name="{{ 'jump.' + global_data.stack_name + '.' + global_data.domain }}" groups="jumphost, all_hosts"
 
 - name: Add route 53 entries for jump in the private domain
   route53:
