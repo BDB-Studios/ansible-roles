@@ -18,7 +18,7 @@
         - name: Create security group for ec
           ec2_group:
             name: "{{ ec_data.ec_sg.name }}"
-            description: "{{ ec_data.ec_sg.desc }}"
+            description: "{{ ec_data.ec_sg.desc }} for {{ target }}"
             rules: "{{ ec_data.ec_sg.ruleset | rules_from_dict([ec_client_sg_id]) }}"
             rules_egress: []
             vpc_id: "{{ vpc_id }}"
@@ -29,7 +29,7 @@
         - name: Create security group for ec
           ec2_group:
             name: "{{ ec_data.ec_sg.name }}"
-            description: "{{ ec_data.ec_sg.desc }}"
+            description: "{{ ec_data.ec_sg.desc }} for {{ target }}"
             rules: "{{ ec_data.ec_sg.ruleset | rules_from_dict() }}"
             rules_egress: []
             vpc_id: "{{ vpc_id }}"

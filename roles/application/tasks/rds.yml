@@ -18,7 +18,7 @@
         - name: Create security group for rds
           ec2_group:
             name: "{{ rds_data.rds_sg.name }}"
-            description: "{{ rds_data.rds_sg.desc }}"
+            description: "{{ rds_data.rds_sg.desc }} for {{ target }}"
             rules: "{{ rds_data.rds_sg.ruleset | rules_from_dict([rds_client_sg_id]) }}"
             rules_egress: []
             vpc_id: "{{ vpc_id }}"
@@ -28,7 +28,7 @@
     - block:
         - name: Create security group for rds
           ec2_group:
-            name: "{{ rds_data.rds_sg.name }}"
+            name: "{{ rds_data.rds_sg.name }} for {{ target }}"
             description: "{{ rds_data.rds_sg.desc }}"
             rules: "{{ rds_data.rds_sg.ruleset | rules_from_dict() }}"
             rules_egress: []
