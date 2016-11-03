@@ -237,6 +237,22 @@ def get_network_interface_assoc(network_assocs, vpc_id):
 
     return association_ids
 
+def unique_instance_stacks(instance_list, target):
+    stack_names = []
+
+    if 'instances' in instance_list:
+        for instance in instance_list['instances']:
+            if 'tags' in instance:
+                if 'Stack' in instance['tags']:
+                    if target != instance['tags']['Stack']:
+                        stack_names.append(instance['tags']['Stack'])
+
+    return list(set(stack_names))
+
+def split_part(string, index, separator='-'):
+    return string.split(separator)[index]
+
+
 class FilterModule(object):
     def filters(self):
         filter_list = {
@@ -255,6 +271,8 @@ class FilterModule(object):
             'get_vpc_elbs': get_vpc_elbs,
             'get_vpc_dhcp_option_sets': get_vpc_dhcp_option_sets,
             'get_internet_gateways': get_internet_gateways,
-            'get_network_interface_assoc': get_network_interface_assoc
+            'get_network_interface_assoc': get_network_interface_assoc,
+            'unique_instance_stacks': unique_instance_stacks,
+            'split_part': split_part
         }
         return filter_list

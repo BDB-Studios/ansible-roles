@@ -1,20 +1,21 @@
 - block:
-  - name: Create VPC and networks
-    include: vpc.yml
-    tags:
-      - network
+    - name: Create VPC and networks
+      include: vpc.yml
+      tags:
+        - network
 
-  - name: Create security groups for jumphost
-    include: security_groups.yml
-    tags:
-      - security
+    - name: Create security groups for jumphost
+      include: security_groups.yml
+      tags:
+        - security
 
-  - name: Create our jumphost
-    include: jump_host.yml
-    tags:
-      - instances
-      - jumphost
-  when: "{{ vpc.state | default('present') == 'present' }}"
+    - name: Create our jumphost
+      include: jump_host.yml
+      tags:
+        - instances
+        - jumphost
+
+  when: destroy_stack is undefined or not destroy_stack|bool
 
 - name: Wait for provisioning of hosts to finish
   pause: minutes=2
@@ -23,6 +24,6 @@
 - block:
   - name: Delete VPC
     include: destroy_vpc.yml
-  when: "{{ vpc.state | default('present') == 'absent' }}"
+  when: destroy_stack|default(False)|bool
   tags:
     - destroy
