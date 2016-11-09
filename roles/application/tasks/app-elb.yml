@@ -90,12 +90,12 @@
   route53:
     command: create
     overwrite: yes
-    record: "{{ webserver.cname_dns }}.{{ global_data.domain}}."
+    record: "{{ global_data.cname_dns }}.{{ global_data.domain}}."
     zone: "{{ global_data.domain}}."
     type: CNAME
     value: "{{ elbdata.public_dns }}.{{ global_data.domain}}."
-    ttl: 60
-  when: webserver.cname_dns is defined
+    ttl: 3600
+  when: global_data.cname_dns is defined
 
 - name: Add route53 private entry for elb
   route53:
