@@ -68,6 +68,7 @@
 
     - name: Destroy route53 zone records
       shell: aws route53 change-resource-record-sets --hosted-zone-id "{{ internal_zone_id }}" --change-batch "file://{{ playbook_dir }}/route53-delete.json"
+      ignore_errors: true
 
     - name: Destroy route53 entries and private zone
       route53_zone:
@@ -85,7 +86,7 @@
     - name: Destroy route53 zone records
       shell: aws route53 change-resource-record-sets --hosted-zone-id "{{ external_zone_id }}" --change-batch "file://{{ playbook_dir }}/route53-public-delete.json"
 
-  when: public_dns_entries|length
+  when: public_dns_entries|length > 2
 
 - name: Destroy ELB instances
   ec2_elb_lb:
@@ -165,6 +166,6 @@
 - name: Remove VPC
   ec2_vpc:
     state: absent
-    cidr_block: "{{ vpc.cidr }}"
+    vpc_id: "{{ vpc_id }}"
     resource_tags: "{{ vpc.env_tags }}"
     wait: yes

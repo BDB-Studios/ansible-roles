@@ -3,7 +3,7 @@
     key_name: "{{ vpc.ssh_key_name| default('default') }}"
     group:
       - "{{ 'jumphost-' + global_data.stack_name }}"
-    instance_type: t2.nano
+    instance_type: "{{ vpc.jumphost_size | default('t2.nano') }}"
     image: "{{ vpc.ami }}"
     wait: yes
     volumes:

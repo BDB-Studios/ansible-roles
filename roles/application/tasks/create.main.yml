@@ -39,3 +39,5 @@
 
     - name: Wait for provisioning of hosts to finish
       pause: minutes=2
+
+  when: "'vpc' not in target"
